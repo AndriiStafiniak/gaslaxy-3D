@@ -6,7 +6,7 @@ import GUI from 'lil-gui'
  * Base
  */
 // Debug
-const gui = new GUI()
+const gui = new GUI({ width: 360 })
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -15,42 +15,51 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 //Galaxy
 const parameters = {}
-parameters.count = 1000
-parameters.size = 0.02
-const generateGalaxy = () => {
- const geometry = new THREE.BufferGeometry()
+parameters.count = 10000
+parameters.size = 0.01
 
- const positions = new Float32Array(parameters.count * 3)
- for( let i = 0; i< parameters.count; i++ ){
-    const i3 = i * 3
-    positions[i3 + 0] = Math.random()
-    positions[i3 + 1] = Math.random()
-    positions[i3 + 2] = Math.random()
- }
- geometry.setAttribute(
-    'position',
-    new THREE.BufferAttribute(positions,3)
- )
- //material
- const material = new THREE.PointsMaterial({
-    size: parameters.size,
-    sizeAttenuation: true,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending
- })
- //points
- const points = new THREE.Points(geometry, material)
- scene.add(points)
+
+let geometry = null
+let material = null
+let points = null
+
+
+const generateGalaxy = () => {
+    //destroy old galaxy
+    if(points !== null){
+        geometry.dispose()
+        material.dispose()
+        scene.remove(points)
+    }
+    //geometry
+    geometry = new THREE.BufferGeometry()
+
+    const positions = new Float32Array(parameters.count * 3)
+    for (let i = 0; i < parameters.count; i++) {
+        const i3 = i * 3
+        positions[i3 + 1] = (Math.random() - 0.5) * 3
+        positions[i3 + 0] = (Math.random() - 0.5) * 3
+        positions[i3 + 2] = (Math.random() - 0.5) * 3
+    }
+    geometry.setAttribute(
+        'position',
+        new THREE.BufferAttribute(positions, 3)
+    )
+    //material
+    material = new THREE.PointsMaterial({
+        size: parameters.size,
+        sizeAttenuation: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+    })
+    //points
+    points = new THREE.Points(geometry, material)
+    scene.add(points)
 }
 generateGalaxy()
-/**
- * Test cube
- */
-// const cube = new THREE.Mesh(
-//     new THREE.BoxGeometry(1, 1, 1),
-//     new THREE.MeshBasicMaterial()
-// )
-// scene.add(cube)
+
+gui.add(parameters, 'count').min(100).max(1000000).step(100).onFinishChange(generateGalaxy)
+gui.add(parameters, 'size').min(0.001).max(0.1).step(0.001).onFinishChange(generateGalaxy)
 
 /**
  * Sizes
@@ -60,8 +69,7 @@ const sizes = {
     height: window.innerHeight
 }
 
-window.addEventListener('resize', () =>
-{
+window.addEventListener('resize', () => {
     // Update sizes
     sizes.width = window.innerWidth
     sizes.height = window.innerHeight
@@ -103,8 +111,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
  */
 const clock = new THREE.Clock()
 
-const tick = () =>
-{
+const tick = () => {
     const elapsedTime = clock.getElapsedTime()
 
     // Update controls
