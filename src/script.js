@@ -22,13 +22,14 @@ const generateGalaxy = () => {
 
  const positions = new Float32Array(parameters.count * 3)
  for( let i = 0; i< parameters.count; i++ ){
-    positions[i + 0] = Math.random()
-    positions[i + 1] = Math.random()
-    positions[i + 2] = Math.random()
+    const i3 = i * 3
+    positions[i3 + 0] = Math.random()
+    positions[i3 + 1] = Math.random()
+    positions[i3 + 2] = Math.random()
  }
  geometry.setAttribute(
     'position',
-    new THREE.BufferAttribute()
+    new THREE.BufferAttribute(positions,3)
  )
  //material
  const material = new THREE.PointsMaterial({
@@ -38,17 +39,18 @@ const generateGalaxy = () => {
     blending: THREE.AdditiveBlending
  })
  //points
- const points = new THREE.Points()
+ const points = new THREE.Points(geometry, material)
+ scene.add(points)
 }
 generateGalaxy()
 /**
  * Test cube
  */
-const cube = new THREE.Mesh(
-    new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshBasicMaterial()
-)
-scene.add(cube)
+// const cube = new THREE.Mesh(
+//     new THREE.BoxGeometry(1, 1, 1),
+//     new THREE.MeshBasicMaterial()
+// )
+// scene.add(cube)
 
 /**
  * Sizes
