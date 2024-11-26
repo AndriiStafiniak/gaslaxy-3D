@@ -64,7 +64,7 @@ const generateGalaxy = () => {
         positions[i3 + 0] = Math.cos(branchAngle + spinAngle) * radius + randomX
         positions[i3 + 1] = randomY
         positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ
-       
+
         //color
         const mixedColor = colorInside.clone()
         mixedColor.lerp(colorOutside, radius / parameters.radius)
@@ -161,14 +161,18 @@ const clock = new THREE.Clock()
 const tick = () => {
     const elapsedTime = clock.getElapsedTime()
 
+    if (points) {
+        points.rotation.y = elapsedTime * 0.1; // Slow rotation
+    }
+
     // Update controls
-    controls.update()
+    controls.update();
 
     // Render
-    renderer.render(scene, camera)
+    renderer.render(scene, camera);
 
     // Call tick again on the next frame
-    window.requestAnimationFrame(tick)
+    window.requestAnimationFrame(tick);
 }
 
 tick()
